@@ -94,20 +94,26 @@ write.csv(JNU_RKC_boot_fit$quantCI, file = './output/JNU_RKC_boot_quantiles.csv'
 # graph is now a function of the CSAoutput and the bootstrap output.
 #  Also need to give this function a title - area and species, and a min y value
 
+jpeg(filename = './figures/JNU_biomass_bootout.jpg')
 crabboot.graph(CSAout = JNU_RKC_fit1, bootout = JNU_RKC_boot_fit , 
                title = "JNU_RKC red crab", min= 0) 
+dev.off()
 #  plots both legal and mature in 2 ways.
-#crabboot.graph(CSAout = JNU_RKC_fit1, bootout = boot_fit , 
- #              title = "JNU_RKC red crab", min= 0)
+jpeg(filename = './figures/JNU_biomass_legal_boot.jpg')
 crabboot.Legal.graph(CSAout = JNU_RKC_fit1, bootout = JNU_RKC_boot_fit , 
                      title = "JNU_RKC Legal crab", min= 0) 
+dev.off()
+# plots just legal shaded
+jpeg(filename = './figures/JNU_biomass_mature_boot.jpg')
 crabboot.Mature.graph(CSAout = JNU_RKC_fit1, bootout = JNU_RKC_boot_fit , 
                      title = "JNU_RKC Mature crab", min= 0) 
-# plots just legal shaded
+dev.off()
+
+jpeg(filename = './figures/JNU_biomass_boot_larger.jpg')
 crabboot.LM.graph(CSAout = JNU_RKC_fit1, bootout = JNU_RKC_boot_fit , 
                      title = "JNU_RKC Legal & Mature crab", min= 0) 
+dev.off()
 # plots both legal and mature - shaded
-
 
 ################BOOTSTRAP FUNTION ----------------------------------------
 # meant for use after the crabCSA function because it uses inputs from this previous function.
