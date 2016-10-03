@@ -55,14 +55,15 @@ write(JNU_RKC_fit1$SSQ, file = './output/JNU_SSQ.txt')
 # WARNING ! Do NOT run 1,000 reps now.  This will take a LONG time.  B=1000 is preferred but 
 #             here B is smaller to test the boostrap function.
 source("./functions/RKC_RcrabCSA_fnc_for_boot.R")
-JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=3)
+
+JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=10)
 
 #JNU_RKC_boot_fit$quantCI
 #  getting errors so intitial values aren't changing...how to fix this???
 
 #### bootstrap save ----------------------------------
 write.csv(JNU_RKC_boot_fit$est, file = './output/JNU_RKC_boot_estimate.csv')
-write.csv(JNU_RKC_boot_fit$quantCI, file = './output/JNU_RKC_boot_quantiles.csv)
+write.csv(JNU_RKC_boot_fit$quantCI, file = './output/JNU_RKC_boot_quantiles.csv')
 
 #####load bootstrap results back in - when opening new session -------------------
 #boot.par <- read.csv("JNU_RKC_boot_estimate.csv")
@@ -132,9 +133,9 @@ head(JNUred)  #or whatever the name of the data set is
 #5. Make sure that graph= FALSE in crabCSA function
 
 ### test here after loading.
-JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=10) 
+#JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=10) 
 
-
+##### LOAD this -----------------------------------------
 crabbootJNU <- function (dataset=NULL, CSAoutput=NULL, B=NULL){
   est<- CSAoutput$estimates
   dat1 <- cbind(dataset, est[,2:4])
