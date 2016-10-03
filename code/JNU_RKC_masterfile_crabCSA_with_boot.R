@@ -54,6 +54,7 @@ write(JNU_RKC_fit1$SSQ, file = './output/JNU_SSQ.txt')
 ##### Run bootstrap -------------------------
 # WARNING ! Do NOT run 1,000 reps now.  This will take a LONG time.  B=1000 is preferred but 
 #             here B is smaller to test the boostrap function.
+source("./functions/RKC_RcrabCSA_fnc_for_boot.R")
 JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=3)
 
 #JNU_RKC_boot_fit$quantCI
