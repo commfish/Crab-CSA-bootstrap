@@ -21,6 +21,8 @@ str(JNUred)
 ##    be different in each year.
 ########STOP and make sure crabCSA function is loaded##########
 ## open "RKC_Rcrab CSA fnc.R" and load function 
+source("./functions/RKC_RcrabCSA_fnc.R")
+source("./functions/graph_fnc_CSA.R")
 
 ##### Run model ----------------------------------
 #### HERE:
