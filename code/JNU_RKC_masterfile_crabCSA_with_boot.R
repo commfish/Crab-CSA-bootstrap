@@ -12,7 +12,7 @@ getwd()
 # working directory needs to be set to where the .csv input file is located
 
 ##### Load data --------------------------
-JNUred <- read.csv("./data/Juneau/Juneau2016RKC.csv")
+JNUred <- read.csv("./data/Juneau2016RKC.csv")
 #file name needs to be changed to reflect area and species
 
 str(JNUred)
