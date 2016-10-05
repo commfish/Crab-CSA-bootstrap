@@ -15,16 +15,16 @@ JNUred <- read.csv("./data/Juneau2016RKC.csv")
 
 str(JNUred)
 
-## For RED KING CRAB need to adjust function for weighting variable to 
-##    be different in each year.
+
 ########STOP and make sure crabCSA function is loaded##########
-## open "RKC_Rcrab CSA fnc.R" and load function 
-source("./functions/RKC_RcrabCSA_fnc.R")
-source("./functions/graph_fnc_CSA.R")
+## NOT neccessary due to the source code below - open "RKC_Rcrab CSA fnc.R" and load function 
+source("./functions/RKC_RcrabCSA_fnc.R") # sources the file with the model code
+source("./functions/graph_fnc_CSA.R") # sources the file with the graphing function for the bootstrap
 
 ##### Run model ----------------------------------
+## Notes: For RED KING CRAB need to adjust function for weighting variable to be different in each year.
 #### HERE:
-#Name of file and variables will need to be changed, along with other input parms
+# For other areas  - Name of file and variables will need to be changed, along with other input parms
 # use input initial and M from Excel spreadsheet
 #   if needed.
 JNU_RKC_fit1 <- RcrabCSA1 (year = JNUred$Year, catch = JNUred$Catch..Number., 
@@ -37,11 +37,12 @@ JNU_RKC_fit1 <- RcrabCSA1 (year = JNUred$Year, catch = JNUred$Catch..Number.,
 
 JNU_RKC_fit1
 JNU_RKC_fit1$estimates
+# save model output
 write.csv(JNU_RKC_fit1$estimates, './output/JNU_RKC_fit1_estimates.csv')
 
 write.csv(JNU_RKC_fit1$CI, './output/JNU_RKC_fit1_par&CI.csv')
 write(JNU_RKC_fit1$SSQ, file = './output/JNU_SSQ.txt')
-### save graphical output also 
+### save graphical output also - DO THIS manually, I have NOT automated this step.
 
 #########STOP  --------------------------
 ##### BOOTSTRAP ---------------------------------
