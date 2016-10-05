@@ -1,11 +1,9 @@
 ## AREA:Juneau
 ### SPECIES:Red crab
 #### YEAR: 2016
-#Date modified: 7-16-14 / 8-5-14 / 7-9-15/9-27-16
+#Date modified: 7-16-14 / 8-5-14 / 7-9-15/ 9-27-16
 
 ##### workspace ------------------------
-# CSA function here - boostrap function in crabboot file.
-#functions are in "
 getwd()
 #setwd("C:/Users/kjpalof/Documents/Red King_KJP/2016 RKC/Juneau/R CSA")
 #setwd("C:/Users/kjpalof/Documents/Red King_KJP/2014 RKC/Areas-individual 2014/Juneau/R CSA")
