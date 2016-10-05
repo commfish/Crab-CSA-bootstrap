@@ -1,13 +1,13 @@
 ## AREA: Seymour Canal
 ### SPECIES: Red crab
-#### YEAR: 2015 
+#### YEAR: 2016 
 #Date modified: 7-16-14/ 8-1-14 / 8-21-14(boot results -graph or redo)
 ## 8-12-15 / 10-3-16
 
 # # CSA is in 'RKC_RcrabCSA_fnc.R' and 
 # bootstrap is here below 
 ###all data is stored in the data folder.  Functions are sourced out of the functions folder
-
+##### workspace ------------------------
 getwd()
 
 ##### Load data -------------------------------
@@ -17,8 +17,8 @@ SCred <- read.csv('./data/Seymour_2016_Rinput.csv')
 str(SCred)
 
 ##### Load functions --------------------
-source("./functions/RKC_RcrabCSA_fnc.R")
-source("./functions/graph_fnc_CSA.R")
+source("./functions/RKC_RcrabCSA_fnc.R")# sources the file with the model code
+source("./functions/graph_fnc_CSA.R")# sources the file with the graphing function for the bootstrap
 #   OR 
 ########STOP and make sure crabCSA function is loaded##########
 ## open "RKC_Rcrab CSA fnc.R" and load function 
@@ -45,12 +45,12 @@ SC_RKC_fit1
 SC_RKC_fit1$estimates
 SC_RKC_fit1$parms
 SC_RKC_fit1$SSQ
-
+# save model output
 write.csv(SC_RKC_fit1$estimates, './output/SC_RKC_fit1_estimates.csv')
 write.csv(SC_RKC_fit1$CI, './output/SC_RKC_fit1_par&CI.csv')
 write(SC_RKC_fit1$SSQ, file = './output/SC_SSQ.txt')
+### save graphical output also - DO THIS manually, I have NOT automated this step.
 
-# save graphical output here also
 #########STOP  --------------------------
 ##### BOOTSTRAP ---------------------------------
 ##     go to below ### BOOTSTRAP 
@@ -68,13 +68,10 @@ SC_RKC_boot_fit <- crabbootSC(dataset=SCred, CSAoutput=SC_RKC_fit1, B=2)
 write.csv(SC_RKC_boot_fit$est, file = "SC_RKC_boot_estimates_b=1000.csv")
 write.csv(SC_RKC_boot_fit$quantCI, file = "SC_RKC_boot_quantiles_B=1000.csv")
 
-#should end up with boot_fit file that has biomass (legal and mature), and
-  #estimates of q, s, and SSQ for each bootstrap replication.  This file also
-  #contains "quantCI" which are 2.5% and 97.5% confidence bounds for biomass (L and M)
-  #in each year, assuming years are 1997-2016.
+
 
 #################  GRAPHS #########################
-# These need to be loaded from the 'graph_fnc_CSA.R' file   
+# Sourced above OR from the 'graph_fnc_CSA.R' file   
 #  Attempts to graph bootstrap results
 # Biomass estimates are in crabCSA output as $est
 # Quantiles ci's are in bootstrap output$quantCI
@@ -96,7 +93,7 @@ crabboot.LM.graph(CSAout = SC_RKC_fit1, bootout = SC_RKC_boot_fit ,
 # meant for use after the crabCSA function because it uses inputs from this previous function.
 
 #confirm data is loaded
-head(SCred) #or whatever the name of the data set is
+#head(SCred) #or whatever the name of the data set is
 
 #add estimates of index of preR, R, and post to original data
 #set up to run years 1997-2013, need to be automated or edited for other years.
@@ -104,17 +101,21 @@ head(SCred) #or whatever the name of the data set is
 ####
 #########
 #steps:
-#1. Years should be read automatically now but confirm  ##make sure years used are 1997-2013, edit if not in function
-#2. make sure that the original data file and the crabCSA output exist, these are input into 
-##this function.
-#3. copy "crabCSA" code into this function (not the function just the call to the function from original run)
-############  Make sure that the input data is still references to the new boot data
-#########  not the old input data
-#4. Make sure that graph= FALSE in crabCSA function
+#1. Years should be read automatically from input but confirm this below
+#2. make sure that the original data file and the RcrabCSA output exist, these are input into 
+##   this function.
+#3. copy call to "RcrabCSA1" code into this function (from above)
+#(not the function just the call to the function from original run), make sure
+# the call here is to "RcrabCSA1B" - slightly different for bootstrap.
+#4. make sure that in this function the PreR, R, and Post input refer to the bootstrap NOT the original data
+#5. Make sure that graph= FALSE in crabCSA function
+
+### test here after loading.
 
 #boot_fit <- crabboot(dataset=SCred, CSAoutput=SC_RKC_fit1, B=1)
 
 ##### BOOT LOAD THIS----------------------------
+source("./functions/RKC_RcrabCSA_fnc_for_boot.R")
 crabbootSC <- function (dataset=NULL, CSAoutput=NULL, B=NULL){
   est<- CSAoutput$estimates
   dat1 <- cbind(dataset, est[,2:4])
@@ -211,6 +212,10 @@ boot.par$SSQ
 hist(boot.par$SSQ)
 mean(boot.par$SSQ)
 quantile(boot.par$SSQ, c(0.025, 0.975))
+#should end up with boot_fit file that has biomass (legal and mature), and
+#estimates of q, s, and SSQ for each bootstrap replication.  This file also
+#contains "quantCI" which are 2.5% and 97.5% confidence bounds for biomass (L and M)
+#in each year, assuming years are 1997-2016.
 
 ### graphs using new combined file and boot.yearQ
 

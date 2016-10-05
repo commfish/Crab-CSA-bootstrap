@@ -15,18 +15,22 @@ JNUred <- read.csv("./data/Juneau2016RKC.csv")
 
 str(JNUred)
 
-
+##### Load functions --------------------
+source("./functions/RKC_RcrabCSA_fnc.R")# sources the file with the model code
+source("./functions/graph_fnc_CSA.R")# sources the file with the graphing function for the bootstrap
+#   OR 
 ########STOP and make sure crabCSA function is loaded##########
-## NOT neccessary due to the source code below - open "RKC_Rcrab CSA fnc.R" and load function 
-source("./functions/RKC_RcrabCSA_fnc.R") # sources the file with the model code
-source("./functions/graph_fnc_CSA.R") # sources the file with the graphing function for the bootstrap
+## open "RKC_Rcrab CSA fnc.R" and load function 
 
 ##### Run model ----------------------------------
 ## Notes: For RED KING CRAB need to adjust function for weighting variable to be different in each year.
 #### HERE:
-# For other areas  - Name of file and variables will need to be changed, along with other input parms
+# For other areas  - Name of file and variables will need to be changed, 
+#   initial(PreR initial each year, R in the 1st year, Post in the first year, q scaled by 100, 
+        #          s scaled by 1,000,000)
+        # M = 0.30 for Tanner crab AND M = 0.32 for Red Crab
+        # w is a vector of weigthings found in the data file. 
 # use input initial and M from Excel spreadsheet
-#   if needed.
 JNU_RKC_fit1 <- RcrabCSA1 (year = JNUred$Year, catch = JNUred$Catch..Number., 
                           preR = JNUred$PreR, 
                    recr = JNUred$Recruit, post = JNUred$PostR, csT= JNUred$Catch..Survey.Tau, 
