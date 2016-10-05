@@ -1,42 +1,12 @@
-# starting from the beginning without being in an overall function.  
-# go step by step through the function with the Red Crab Juneau area data
-### need to add w or weighting in each year. ONLY difference should be the addition
-#   of w as a vector instead of a value.
-# Juneau area data to test - Tanner crab
-getwd()
-setwd("C:/Users/kjpalof/Documents/Red King_KJP/2014 RKC/Areas-individual 2014/Juneau/R CSA")
-# working directory needs to be set to where the .csv input file is located
+# K.Palof updated 9-8-16
+# Red king crab function for CSA model - use alternative fnc for bootstrap to speed it up.  
 
-JNUred <- read.csv("Juneau 2014 RKC.csv")
-#file name needs to be changed to reflect area and species
-
-str(JNUred)
-
-
-# use these to test but not for actual model
-#year <- JNUred$Year
-#catch <- JNUred$Catch..Number. #catch cannot be a factor
-#preR <- JNUred$PreR
-#recr <- JNUred$Recruit
-#post <- JNUred$PostR
-#csT <- JNUred$Catch..Survey.Tau
-#sTs <- JNUred$Survey.Tau
-#LegWt <- JNUred$Legal.Weight
-#PreRWt <- JNUred$Prerecruit.Weight
-
-#M <- 0.32
-
-#w <- JNUred$w
-
-initial = c(2.00, 2.80, 1.10, 101.10, 79.02)# take these from Excel CSA
-uprn = 1000000
-
-trial1 <- RcrabCSA (year = JNUred$Year, catch = JNUred$Catch..Number., preR = JNUred$PreR, 
-                   recr = JNUred$Recruit, post = JNUred$PostR, csT= JNUred$Catch..Survey.Tau, 
-                   sTs =JNUred$Survey.Tau, LegWt=JNUred$Legal.Weight, 
-                   PreRWt=JNUred$Prerecruit.Weight, M = 0.30, 
-                   w = JNUred$w, initial = c(2.00, 2.80, 1.10, 101.10, 79.02), 
-                   uprn = 1000000, graph = TRUE)
+#trial1 <- RcrabCSA1 (year = JNUred$Year, catch = JNUred$Catch..Number., preR = JNUred$PreR, 
+#                   recr = JNUred$Recruit, post = JNUred$PostR, csT= JNUred$Catch..Survey.Tau, 
+#                   sTs =JNUred$Survey.Tau, LegWt=JNUred$Legal.Weight, 
+#                   PreRWt=JNUred$Prerecruit.Weight, M = 0.30, 
+#                   w = JNUred$w, initial = c(2.00, 2.80, 1.10, 101.10, 79.02), 
+#                   uprn = 1000000, graph = TRUE)
 ##################FUNCTION CODE STARTS HERE ########################
 ######################################################################
 ###################################################################
@@ -45,14 +15,14 @@ trial1 <- RcrabCSA (year = JNUred$Year, catch = JNUred$Catch..Number., preR = JN
 # easier estimation.  See cs function for rescaling.
 
 RcrabCSA1 <- function (year = NULL, catch = NULL, preR = NULL, recr = NULL, 
-                     post = NULL, csT=NULL, sTs=NULL, LegWt=NULL, PreRWt=NULL,
-                     M = NULL, w = NULL, 
-                     initial = c(NA, NA, NA, NA, NA), uprn = NA, graph = TRUE)
+                       post = NULL, csT=NULL, sTs=NULL, LegWt=NULL, PreRWt=NULL,
+                       M = NULL, w = NULL, 
+                       initial = c(NA, NA, NA, NA, NA), uprn = NA, graph = TRUE)
 {  
   if (is.null(year))
-	stop("missing year vector")
+    stop("missing year vector")
   if (is.null(year))
-	stop("missing year vector")
+    stop("missing year vector")
   outs <- NULL
   yrs <- length(year) # creates a value for the number of years
   
@@ -83,7 +53,7 @@ RcrabCSA1 <- function (year = NULL, catch = NULL, preR = NULL, recr = NULL,
       if (i > 1) {
         rest[i] <<- max(0.001, prest[i - 1] * ((x[yrs + 4])/100)) #rescaling s
         nest[i] <<- max(0.001, ((nest[i - 1] + rest[i - 1]) * exp(-M * sTs[i]) 
-                        - (x[yrs + 3]/1000000) * catch[i - 1] * exp(-M * csT[i])))
+                                - (x[yrs + 3]/1000000) * catch[i - 1] * exp(-M * csT[i])))
         # need to rescale q here
       }
     }
@@ -92,7 +62,7 @@ RcrabCSA1 <- function (year = NULL, catch = NULL, preR = NULL, recr = NULL,
     TPRSS <- 0 #need one for PreR now
     
     TPRSS <- sum((((log(preR[seq(1, yrs, 1)]+0.001) - 
-                    log(prest[seq(1, yrs, 1)]+0.002)) ^2)*w[seq(1,yrs,1)]), na.rm = T)
+                      log(prest[seq(1, yrs, 1)]+0.001)) ^2)*w[seq(1,yrs,1)]), na.rm = T) # second 0.001 was a 0.002 why?? changed this 8-14-15
     TPSS <- sum((((log(post[seq(1, yrs, 1)]+0.001) - 
                      log(nest[seq(1, yrs, 1)]+0.001)) ^2)*w[seq(1,yrs,1)]), na.rm = T)
     TRSS <- sum((((log(recr[seq(1, yrs, 1)]+0.001) - 
@@ -107,7 +77,7 @@ RcrabCSA1 <- function (year = NULL, catch = NULL, preR = NULL, recr = NULL,
   s <- ((outs$par[yrs+4])/100)
   q <- ((outs$par[yrs+ 3])/1000000)
   cov <- solve(outs$hessian) #didn't change
-  est_se <- sqrt(diag(cov))
+  est_se <- sqrt(abs(diag(cov))) # changed this to the absolute value 
   upper_CI <- outs$par + 1.96*est_se
   lower_CI <- outs$par - 1.96*est_se
   
@@ -140,27 +110,26 @@ RcrabCSA1 <- function (year = NULL, catch = NULL, preR = NULL, recr = NULL,
   #names(output) <- c("q", "Estimates PreR", "Estimates R", "Estimates Post")
   
   if (graph == TRUE) {
-        par(mfrow = c(2, 2))
-        plot(x = year, y = preR, col = "black", ylab = "Survey Index", 
-                    xlab = "Year", main = "Pre-Recruit (O=black, P=red)", 
-                     ylim = c(0, max(preR, out2[, 2], na.rm=TRUE)))
-          lines(x = year[1:yrs], y = out2[, 2], col = "red")
-        plot(x = year, y = recr, col = "black", ylab = "Survey Index", 
-                 xlab = "Year", main = "Recruit (O=black, P=red)", 
-                  ylim = c(0, max(recr, out2[, 3], na.rm=TRUE)))
-          lines(x = year[1:yrs], y = out2[, 3], col = "red")
-        plot(x = year, y = post, col = "black", ylab = "Survey Index", 
-             xlab = "Year", main = "Post-Recruit (O=black, P=red)", 
-             ylim = c(0, max(post, out2[, 4], na.rm=TRUE)))
-          lines(x = year, y = out2[, 4], col = "red")
-        plot(x = year[1:yrs], y = out2[, 9], type = "l", 
-             col = "black", ylab = "Mature & Legal Numbers", xlab = "Year", main = "Stock Abundance", 
-             xlim = c(min(year), max(year)), ylim = c(0, max(out2[,9], na.rm=TRUE)))
-          lines(x=year, y= out2[,8], col = "red")
-  #plot(x = year[1:yrs - 1], y = out2[, 5], type = "l", 
-  #    col = "black", ylab = "F", xlab = "Year", main = "Fishing Mortality", 
-  #   xlim = c(min(year), max(year[1:yrs - 1])))
-    }
+    par(mfrow = c(2, 2))
+    plot(x = year, y = preR, col = "black", ylab = "Survey Index", 
+         xlab = "Year", main = "Pre-Recruit (O=black, P=red)", 
+         ylim = c(0, max(preR, out2[, 2], na.rm=TRUE)))
+    lines(x = year[1:yrs], y = out2[, 2], col = "red")
+    plot(x = year, y = recr, col = "black", ylab = "Survey Index", 
+         xlab = "Year", main = "Recruit (O=black, P=red)", 
+         ylim = c(0, max(recr, out2[, 3], na.rm=TRUE)))
+    lines(x = year[1:yrs], y = out2[, 3], col = "red")
+    plot(x = year, y = post, col = "black", ylab = "Survey Index", 
+         xlab = "Year", main = "Post-Recruit (O=black, P=red)", 
+         ylim = c(0, max(post, out2[, 4], na.rm=TRUE)))
+    lines(x = year, y = out2[, 4], col = "red")
+    plot(x = year[1:yrs], y = out2[, 9], type = "l", 
+         col = "black", ylab = "Mature & Legal Numbers", xlab = "Year", main = "Stock Abundance", 
+         xlim = c(min(year), max(year)), ylim = c(0, max(out2[,9], na.rm=TRUE)))
+    lines(x=year, y= out2[,8], col = "red")
+    #plot(x = year[1:yrs - 1], y = out2[, 5], type = "l", 
+    #    col = "black", ylab = "F", xlab = "Year", main = "Fishing Mortality", 
+    #   xlim = c(min(year), max(year[1:yrs - 1])))
+  }
   return(output)
 }
-
