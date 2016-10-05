@@ -46,7 +46,7 @@ write(JNU_RKC_fit1$SSQ, file = './output/JNU_SSQ.txt')
 
 #########STOP  --------------------------
 ##### BOOTSTRAP ---------------------------------
-##     go to below ### BOOTSTRAP 
+##     go to below ### BOOTSTRAP FUNCTION
 ##      and follow instructions BEFORE
 ###    loading crabboot function - LOAD the specific function in this file.
 ##############################
@@ -64,26 +64,7 @@ JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=10)
 write.csv(JNU_RKC_boot_fit$est, file = './output/JNU_RKC_boot_estimate.csv')
 write.csv(JNU_RKC_boot_fit$quantCI, file = './output/JNU_RKC_boot_quantiles.csv')
 
-#####load bootstrap results back in - when opening new session -------------------
-#boot.par <- read.csv("JNU_RKC_boot_estimate.csv")
-#boot.par <- boot.par[ ,-1] # need to remove the first column which has the rep number in it
 
-#head(boot.par)
-
-#SSQ quantiles
-#boot.par$SSQ
-#hist(boot.par$SSQ)
-#mean(boot.par$SSQ)
-#quantile(boot.par$SSQ, c(0.025, 0.975))
-
-#write.csv(boot.yearQ, file = "JNU_RKC_boot_quantiles_trial1.csv")
-
-##### END -----------------------------------------
-
-#should end up with boot_fit file that has biomass (legal and mature), and
-  #estimates of q, s, and SSQ for each bootstrap replication.  This file also
-  #contains "quantCI" which are 2.5% and 97.5% confidence bounds for biomass (L and M)
-  #in each year, assuming years are 1979-2014.
 
 #################  GRAPHS ------------------------------------
 # These need to be loaded from the 'graph_fnc_CSA.R' file   
@@ -116,31 +97,27 @@ dev.off()
 
 ################BOOTSTRAP FUNTION ----------------------------------------
 # meant for use after the crabCSA function because it uses inputs from this previous function.
-#bootstrap function
-# meant for use after the crabCSA function because it uses inputs from this previous function.
 
-#confirm data is loaded
-head(JNUred)  #or whatever the name of the data set is
+# confirm data is loaded
+#head(JNUred)  #or whatever the name of the data set is
 
-#!!!!!!!!!!!!add estimates of index of preR, R, and post to original data
-#
-# !!!!!!!!!!!!for a new AREA/SPECIES combo copy crabCSA command into this function.
 ####
 #########
 #steps:
 #1. Years should be read automatically from input but confirm this below
 #2. make sure that the original data file and the RcrabCSA output exist, these are input into 
-##this function.
-#3. copy call to "RcrabCSA1" code into this function 
+##   this function.
+#3. copy call to "RcrabCSA1" code into this function (from above)
             #(not the function just the call to the function from original run), make sure
             # the call here is to "RcrabCSA1B" - slightly different for bootstrap.
 #4. make sure that in this function the PreR, R, and Post input refer to the bootstrap NOT the original data
 #5. Make sure that graph= FALSE in crabCSA function
 
 ### test here after loading.
-#JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=10) 
+JNU_RKC_boot_fit <- crabbootJNU(dataset=JNUred, CSAoutput=JNU_RKC_fit1, B=1) 
 
 ##### LOAD this -----------------------------------------
+source("./functions/RKC_RcrabCSA_fnc_for_boot.R")
 crabbootJNU <- function (dataset=NULL, CSAoutput=NULL, B=NULL){
   est<- CSAoutput$estimates
   dat1 <- cbind(dataset, est[,2:4])
@@ -206,5 +183,25 @@ crabbootJNU <- function (dataset=NULL, CSAoutput=NULL, B=NULL){
   return(output)
 }
 
-#####################
+##################### END / STOP ------------------------------------------------
 
+#####load bootstrap results back in - when opening new session -------------------
+#boot.par <- read.csv("JNU_RKC_boot_estimate.csv")
+#boot.par <- boot.par[ ,-1] # need to remove the first column which has the rep number in it
+
+#head(boot.par)
+
+#SSQ quantiles
+#boot.par$SSQ
+#hist(boot.par$SSQ)
+#mean(boot.par$SSQ)
+#quantile(boot.par$SSQ, c(0.025, 0.975))
+
+#write.csv(boot.yearQ, file = "JNU_RKC_boot_quantiles_trial1.csv")
+
+##### END -----------------------------------------
+
+#should end up with boot_fit file that has biomass (legal and mature), and
+#estimates of q, s, and SSQ for each bootstrap replication.  This file also
+#contains "quantCI" which are 2.5% and 97.5% confidence bounds for biomass (L and M)
+#in each year, assuming years are 1979-2014.
